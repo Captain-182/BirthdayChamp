@@ -1,107 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Happy Birthday!</title>
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      background: linear-gradient(135deg, #ffdd00, #ff66cc, #66ccff, #99ff99);
-      background-size: 400% 400%;
-      animation: gradientBG 10s ease infinite;
-      color: white;
-      overflow: hidden;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Happy Birthday!</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background: linear-gradient(135deg, #ffdd00, #ff66cc, #66ccff, #99ff99);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+    color: white;
+    overflow: hidden;
+    position: relative;
+  }
 
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
 
-    h1 {
-      font-size: 3em;
-      text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
-    }
+  canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
 
-    .hidden {
-      display: none;
-    }
-  </style>
+  #content {
+    position: relative;
+    z-index: 1;
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 2.5em;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+    margin-bottom: 0.5em;
+  }
+
+  p {
+    font-size: 1.2em;
+    line-height: 1.4;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  @media (max-width: 480px) {
+    h1 { font-size: 2em; }
+    p { font-size: 1em; }
+  }
+</style>
 </head>
 <body>
-  <div id="content" class="hidden">
-    <h1>🎉 Happy Birthday, Champ! 🎈</h1>
-    <p>Wishing you a day full of fun, cake, and surprises! 🥳
-    
-    <br>
-        For Aahil
-    </p>
-    <canvas id="confettiCanvas"></canvas>
-  </div>
+<div id="content" class="hidden">
+  <h1>🎉 Happy Birthday, Champ! 🎈</h1>
+  <p>Wishing you a day full of fun, cake, and surprises! 🥳<br>For Aahil</p>
+</div>
+<canvas id="confettiCanvas"></canvas>
 
-  <script>
-    // Password prompt
-    const password = "party";
-    const userPass = prompt("Enter the password:");
-    if(userPass === password){
-      document.getElementById("content").classList.remove("hidden");
-      startConfetti();
-    } else {
-      document.body.innerHTML = "<h2 style='color:white;'>Wrong password!</h2>";
+<script>
+  const password = "party";
+  const userPass = prompt("Enter the password:");
+  if(userPass === password){
+    document.getElementById("content").classList.remove("hidden");
+    startConfetti();
+  } else {
+    document.body.innerHTML = "<h2 style='color:white;text-align:center;'>Wrong password!</h2>";
+  }
+
+  function startConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const confetti = Array.from({length: 200}).map(() => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      r: Math.random() * 6 + 4,
+      dx: Math.random() - 0.5,
+      dy: Math.random() * 3 + 2,
+      color: `hsl(${Math.random() * 360}, 100%, 50%)`
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      confetti.forEach(c => {
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+        ctx.fillStyle = c.color;
+        ctx.fill();
+      });
+      update();
     }
 
-    // Confetti animation
-    function startConfetti() {
-      const canvas = document.getElementById('confettiCanvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      const confetti = Array.from({length: 200}).map(() => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height - canvas.height,
-        r: Math.random() * 6 + 4,
-        dx: Math.random() - 0.5,
-        dy: Math.random() * 3 + 2,
-        color: `hsl(${Math.random() * 360}, 100%, 50%)`
-      }));
-
-      function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        confetti.forEach(c => {
-          ctx.beginPath();
-          ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-          ctx.fillStyle = c.color;
-          ctx.fill();
-        });
-        update();
-      }
-
-      function update() {
-        confetti.forEach(c => {
-          c.x += c.dx;
-          c.y += c.dy;
-          if (c.y > canvas.height) {
-            c.y = -10;
-            c.x = Math.random() * canvas.width;
-          }
-        });
-      }
-
-      function loop() {
-        draw();
-        requestAnimationFrame(loop);
-      }
-      loop();
+    function update() {
+      confetti.forEach(c => {
+        c.x += c.dx;
+        c.y += c.dy;
+        if (c.y > canvas.height) {
+          c.y = -10;
+          c.x = Math.random() * canvas.width;
+        }
+      });
     }
-  </script>
+
+    function loop() {
+      draw();
+      requestAnimationFrame(loop);
+    }
+    loop();
+  }
+</script>
 </body>
 </html>
